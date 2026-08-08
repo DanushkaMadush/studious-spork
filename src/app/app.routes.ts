@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { MainLayout } from './layouts/main-layout/main-layout';
+import { authGuard } from './core/auth/guards/auth.guard';
 
 export const routes: Routes = [
   {
@@ -14,14 +15,13 @@ export const routes: Routes = [
   },
   {
     path: 'app',
-    loadComponent: () =>
+    canActivate: [authGuard],
+    loadComponent: () => import('./layouts/main-layout/main-layout').then((m) => m.MainLayout),
       // lazy load main layout as a component, then inside main lazy load other routes.
-      import('./layouts/main-layout/main-layout').then((m) => m.MainLayout),
-    children: [
+      children: [
       {
         path: 'dashboard',
-        loadChildren: () =>
-          import('./features/dashboard/dashboard.routes').then((m) => m.DASHBOARD_ROUTES),
+        loadChildren: () => import('./features/dashboard/dashboard.routes').then((m) => m.DASHBOARD_ROUTES),
       },
       {
         path: 'tasks',
